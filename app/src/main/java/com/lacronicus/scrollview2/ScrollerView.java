@@ -184,7 +184,7 @@ public class ScrollerView extends View {
   public void setScrollScaleX(float scrollScaleX) {
     float oldScaleX = this.scrollScaleX;
     this.scrollScaleX = scrollScaleX;
-    scrollY = scrollY / oldScaleX * scrollScaleX;
+    scrollX = scrollX / oldScaleX * scrollScaleX;
   }
 
   public void setScrollScaleY(float scrollScaleY) {
@@ -205,18 +205,25 @@ public class ScrollerView extends View {
               i,
               view.getWidth() / getxNormalDistance(),
               view.getHeight() / getyNormalDistance(),
-              scrollX / getxNormalDistance(),
-              scrollY / getyNormalDistance());
+              scrollX / getxNormalDistance() / scrollScaleX,
+              scrollY / getyNormalDistance() / scrollScaleY
+      ) * scrollScaleX;
       float normalizedY = funcY.getScreenPosition(this,
               i,
               view.getWidth() / getxNormalDistance(),
               view.getHeight() / getyNormalDistance(),
-              scrollX / getxNormalDistance(),
-              scrollY / getyNormalDistance());
+              scrollX / getxNormalDistance() / scrollScaleX,
+              scrollY / getyNormalDistance() / scrollScaleY
+      ) * scrollScaleY;
       float rawX = getOriginX() + getxNormalDistance() * normalizedX;
       float rawY = getOriginY() + getyNormalDistance() * normalizedY;
 
-      float rotation = rotationFunc.getScreenPosition(this, i, view.getWidth() / getxNormalDistance(), view.getHeight() / getyNormalDistance(), scrollX / getxNormalDistance(), scrollY / getyNormalDistance());
+      float rotation = rotationFunc.getScreenPosition(this,
+              i,
+              view.getWidth() / getxNormalDistance(),
+              view.getHeight() / getyNormalDistance(),
+              scrollX / getxNormalDistance() / scrollScaleX,
+              scrollY / getyNormalDistance() / scrollScaleY);
 
       centerViewOnPoint(view, rawX, rawY, rotation);
     }

@@ -32,7 +32,7 @@
         android:layout_marginStart="8dp" app:layout_constraintTop_toTopOf="@+id/xy"
         android:layout_marginTop="0dp"/>
     <Button
-        android:id="@+id/inversion"
+        android:id="@+id/zero"
         android:text="zero"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@+id/sin"
@@ -43,7 +43,7 @@
         android:id="@+id/hand"
         android:text="hand"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@+id/inversion"
+        app:layout_constraintStart_toEndOf="@+id/zero"
         android:layout_marginStart="8dp" app:layout_constraintTop_toTopOf="@+id/sin"
         android:layout_marginTop="0dp"/>
 
