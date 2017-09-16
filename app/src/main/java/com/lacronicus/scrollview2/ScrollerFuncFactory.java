@@ -9,15 +9,15 @@ public class ScrollerFuncFactory {
   public final ScrollerView.ScrollFunc sinFunc = new ScrollerView.ScrollFunc() {
     @Override
     public float getScreenPosition(ScrollerView scrollerView, int index, float targetWidth, float targetHeight, float scrollX, float scrollY) {
-      float sinY = (float) Math.sin((scrollX+ targetWidth * index) * 3.14f);
-      return sinY * .1f;
+      float sinY = (float) Math.sin((scrollX + targetWidth * index) * 3.14f / 2);
+      return sinY * .2f;
     }
   };
 
   public final ScrollerView.ScrollFunc xyFunc = new ScrollerView.ScrollFunc() {
     @Override
     public float getScreenPosition(ScrollerView scrollerView, int index, float targetWidth, float targetHeight, float scrollX, float scrollY) {
-      return -(scrollX+ targetWidth * index);
+      return -(scrollX + targetWidth * index);
     }
   };
 
@@ -76,7 +76,7 @@ public class ScrollerFuncFactory {
   public final ScrollerView.ScrollFunc defaultX = new ScrollerView.ScrollFunc() {
     @Override
     public float getScreenPosition(ScrollerView scroller, int index, float targetWidth, float targetHeight, float virtualScrollX, float virtualScrollY) {
-      return (virtualScrollX+ targetWidth * index);
+      return (virtualScrollX + targetWidth * index);
     }
   };
 
@@ -90,7 +90,7 @@ public class ScrollerFuncFactory {
   public final ScrollerView.ScrollFunc spinnyRotation = new ScrollerView.ScrollFunc() {
     @Override
     public float getScreenPosition(ScrollerView scroller, int index, float targetWidth, float targetHeight, float virtualScrollX, float virtualScrollY) {
-      return 360 * (virtualScrollX+ targetWidth * index);
+      return 360 * (virtualScrollX + targetWidth * index);
 
     }
   };

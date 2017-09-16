@@ -27,12 +27,12 @@ public class MainActivity extends AppCompatActivity {
     findViewById(R.id.sin).setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        scrollerView.setScrollScaleX(0.8f);
+        scrollerView.setScrollScaleX(0.3f);
         scrollerView.setEquationX(factory.defaultX);
         scrollerView.setEquationY(factory.sinFunc);
         scrollerView.setEquationRotation(factory.zeroRotation);
         scrollerView.updateViewPositions(true);
-        scrollerView.setMinX(totalWidth * 0.8f);
+        scrollerView.setMinX(totalWidth * 0.3f);
       }
     });
 
