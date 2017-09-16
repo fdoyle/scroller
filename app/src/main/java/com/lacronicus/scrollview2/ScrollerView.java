@@ -34,8 +34,16 @@ public class ScrollerView extends View {
   ScrollFunc rotationFunc;
 
 
-  int scrollX = 0;
-  int scrollY = 0;
+  float scrollX = 0;
+  float scrollY = 0;
+
+  float minX = 0;
+  float maxX = 0;
+  float minY = 0;
+  float maxY = 0;
+
+  float scrollScaleX = 1;
+  float scrollScaleY = 1;
 
   float overlapRatio = 1;
 
@@ -79,7 +87,7 @@ public class ScrollerView extends View {
     funcY = new ScrollFunc() {
       @Override
       public float getScreenPosition(ScrollerView scrollerView, int index, float targetWidth, float targetHeight, float scrollX, float scrollY) {
-        return (float) Math.sin((scrollX + targetWidth * index) * 3.14) / 2;
+        return (float) Math.sin((scrollX + targetWidth * index) * 3.14f) / 2;
       }
     };
     rotationFunc = new ScrollFunc() {
@@ -110,8 +118,7 @@ public class ScrollerView extends View {
             float deltaY = curY - lastY;
             scrollX += deltaX;
             scrollY += deltaY;
-            Log.d("TAG", "scrollx " + scrollX);
-
+            constrainScrollPositionToBounds();
             updateViewPositions(false);
 
 
@@ -119,7 +126,7 @@ public class ScrollerView extends View {
           case MotionEvent.ACTION_UP:
             //todo animate
             tracker.computeCurrentVelocity(1000);
-            FlingAnimation animation = new FlingAnimation(new FloatValueHolder(10)).setStartVelocity(tracker.getXVelocity()).addUpdateListener(new DynamicAnimation.OnAnimationUpdateListener() {
+            FlingAnimation animation = new FlingAnimation(new FloatValueHolder(0)).setStartVelocity(tracker.getXVelocity()).addUpdateListener(new DynamicAnimation.OnAnimationUpdateListener() {
               float lastX;
 
               @Override
@@ -129,13 +136,14 @@ public class ScrollerView extends View {
                 } else {
                   scrollX += value - lastX;
                 }
+                constrainScrollPositionToBounds();
                 lastX = value;
                 updateViewPositions(false);
               }
             });
             animation.start();
 
-            FlingAnimation animationY = new FlingAnimation(new FloatValueHolder(10)).setStartVelocity(tracker.getYVelocity()).addUpdateListener(new DynamicAnimation.OnAnimationUpdateListener() {
+            FlingAnimation animationY = new FlingAnimation(new FloatValueHolder(0)).setStartVelocity(tracker.getYVelocity()).addUpdateListener(new DynamicAnimation.OnAnimationUpdateListener() {
               float lastY;
 
               @Override
@@ -145,6 +153,7 @@ public class ScrollerView extends View {
                 } else {
                   scrollY += value - lastY;
                 }
+                constrainScrollPositionToBounds();
                 lastY = value;
                 updateViewPositions(false);
               }
@@ -161,23 +170,55 @@ public class ScrollerView extends View {
     });
   }
 
-  public void setOverlapRatio(float overlapRatio){
+  private void constrainScrollPositionToBounds() {
+    if (scrollX < minX)
+      scrollX = minX;
+    if (scrollX > maxX)
+      scrollX = maxX;
+    if (scrollY < minY)
+      scrollY = minY;
+    if (scrollY > maxY)
+      scrollY = maxY;
+  }
+
+  public void setScrollScaleX(float scrollScaleX) {
+    float oldScaleX = this.scrollScaleX;
+    this.scrollScaleX = scrollScaleX;
+    scrollY = scrollY / oldScaleX * scrollScaleX;
+  }
+
+  public void setScrollScaleY(float scrollScaleY) {
+    float oldScaleY = this.scrollScaleY;
+    this.scrollScaleY = scrollScaleY;
+    scrollY = scrollY / oldScaleY * scrollScaleY;
+  }
+
+  public void setOverlapRatio(float overlapRatio) {
     this.overlapRatio = overlapRatio;
   }
 
   public void updateViewPositions(boolean animate) {
+    Log.d("TAG", String.format("scroll %s %s", scrollX, scrollY));
     for (int i = 0; i != viewList.size(); i++) {
       View view = viewList.get(i);
-      float normalizedX = funcX.getScreenPosition(this, i, view.getWidth() / getxNormalDistance(), view.getHeight() / getyNormalDistance(), scrollX / getxNormalDistance(), scrollY / getyNormalDistance());
-      float normalizedY = funcY.getScreenPosition(this, i, view.getWidth() / getxNormalDistance(), view.getHeight() / getyNormalDistance(), scrollX / getxNormalDistance(), scrollY / getyNormalDistance());
-      Log.d("TAG", "" + normalizedX + " " + normalizedY);
-
+      float normalizedX = funcX.getScreenPosition(this,
+              i,
+              view.getWidth() / getxNormalDistance(),
+              view.getHeight() / getyNormalDistance(),
+              scrollX / getxNormalDistance(),
+              scrollY / getyNormalDistance());
+      float normalizedY = funcY.getScreenPosition(this,
+              i,
+              view.getWidth() / getxNormalDistance(),
+              view.getHeight() / getyNormalDistance(),
+              scrollX / getxNormalDistance(),
+              scrollY / getyNormalDistance());
       float rawX = getOriginX() + getxNormalDistance() * normalizedX;
       float rawY = getOriginY() + getyNormalDistance() * normalizedY;
 
       float rotation = rotationFunc.getScreenPosition(this, i, view.getWidth() / getxNormalDistance(), view.getHeight() / getyNormalDistance(), scrollX / getxNormalDistance(), scrollY / getyNormalDistance());
 
-      centerViewOnPoint(view, rawX, rawY,rotation);
+      centerViewOnPoint(view, rawX, rawY, rotation);
     }
   }
 
@@ -197,8 +238,24 @@ public class ScrollerView extends View {
     this.funcY = funcY;
   }
 
-  public void setEquationRotation(ScrollFunc rotationFunc){
+  public void setEquationRotation(ScrollFunc rotationFunc) {
     this.rotationFunc = rotationFunc;
+  }
+
+  public void setMinX(float minX) {
+    this.minX = minX;
+  }
+
+  public void setMaxX(float maxX) {
+    this.maxX = maxX;
+  }
+
+  public void setMinY(float minY) {
+    this.minY = minY;
+  }
+
+  public void setMaxY(float maxY) {
+    this.maxY = maxY;
   }
 
   public void setViews(List<View> views) {
@@ -234,8 +291,6 @@ public class ScrollerView extends View {
     animationMapX.get(view).setMinimumVisibleChange(1).animateToFinalPosition(x - halfWidth);
     animationMapY.get(view).setMinimumVisibleChange(1).animateToFinalPosition(getHeight() - y - halfHeight);
     animationMapRotation.get(view).setMinimumVisibleChange(1).animateToFinalPosition(rotation);
-
-    Log.d("TAG", "raw " + x + " " + y + " overlapRatio: " + x / y);
   }
 
   interface ScrollFunc {

@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
   ScrollerView.ScrollFunc xyFunc = new ScrollerView.ScrollFunc() {
     @Override
     public float getScreenPosition(ScrollerView scrollerView, int index, float targetWidth, float targetHeight, float scrollX, float scrollY) {
-      return -(scrollX* 1.2f + targetWidth * index) / 1.2f;
+      return -(scrollX+ targetWidth * index);
     }
   };
 
@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
   ScrollerView.ScrollFunc defaultX = new ScrollerView.ScrollFunc() {
     @Override
     public float getScreenPosition(ScrollerView scroller, int index, float targetWidth, float targetHeight, float virtualScrollX, float virtualScrollY) {
-      return (virtualScrollX * 1.2f + targetWidth * index) / 1.2f;
+      return (virtualScrollX+ targetWidth * index);
     }
   };
 
@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
   ScrollerView.ScrollFunc spinnyRotation = new ScrollerView.ScrollFunc() {
     @Override
     public float getScreenPosition(ScrollerView scroller, int index, float targetWidth, float targetHeight, float virtualScrollX, float virtualScrollY) {
-      return 360 * (virtualScrollX * 1.2f + targetWidth * index) / 1.2f;
+      return 360 * (virtualScrollX+ targetWidth * index);
 
     }
   };
@@ -153,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     List<View> viewList = new ArrayList<>();
+    float ratio = 1 / 1.2f;
     for (int i = 0; i != 30; i++) {
       View box = LayoutInflater.from(this).inflate(R.layout.card, root, false);
       box.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
@@ -161,11 +162,13 @@ public class MainActivity extends AppCompatActivity {
     }
     scrollerView.setViews(viewList);
 
+    //last item should be at 9280/7733
     scrollerView.setEquationY(sinFunc);
     root.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
       @Override
       public void onGlobalLayout() {
         root.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        scrollerView.setMinX(-29 * scrollerView.viewList.get(0).getMeasuredWidth());
         scrollerView.updateViewPositions(true);
       }
     });
